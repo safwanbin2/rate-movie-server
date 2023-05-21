@@ -173,20 +173,24 @@ app.patch("/reviews/foundHelpful", async (req, res) => {
         const email = req.query.email;
         const filter = { _id: new ObjectId(id) };
         const options = { upersert: true }
-
+        const updatedDocumentIfNotExist = {
+            $push: {
+                foundHelpful: email
+            }
+        };
+        const updatedDocumentIfExist = {
+            $pull: {
+                foundHelpful: email
+            }
+        };
         // checking if already liked
         const exist = await ReviewsCollection.findOne(filter);
-        if(exist.foundHelpful.includes(email)){
-            console.log("exist")
+        if (exist.foundHelpful.includes(email)) {
+            const result = await ReviewsCollection.updateOne(filter, updatedDocumentIfExist, options);
+            return res.send({result, message: "desliked"});
         }
-
-        // const updatedDocument = {
-        //     $push: {
-        //         foundHelpful: email
-        //     }
-        // };
-        // const result = await ReviewsCollection.updateOne(filter, updatedDocument, options);
-        // res.send(result);
+        const result = await ReviewsCollection.updateOne(filter, updatedDocumentIfNotExist, options);
+        res.send({result, message: "liked"});
     } catch (error) {
         console.log(error);
     }
