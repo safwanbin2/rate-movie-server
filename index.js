@@ -74,7 +74,18 @@ app.get('/users/isAdmin', async (req, res) => {
         console.log(error);
     }
 })
-
+// responding with admins or fans list
+app.get("/users/list", async (req, res) => {
+    try {
+        const providedRole = req.query.role;
+        const filter = { role: providedRole };
+        const cursor = UsersCollection.find(filter);
+        const result = await cursor.toArray();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // providing all the movies
 app.get('/movies/all', async (req, res) => {
     try {
@@ -187,10 +198,10 @@ app.patch("/reviews/foundHelpful", async (req, res) => {
         const exist = await ReviewsCollection.findOne(filter);
         if (exist.foundHelpful.includes(email)) {
             const result = await ReviewsCollection.updateOne(filter, updatedDocumentIfExist, options);
-            return res.send({result, message: "desliked"});
+            return res.send({ result, message: "desliked" });
         }
         const result = await ReviewsCollection.updateOne(filter, updatedDocumentIfNotExist, options);
-        res.send({result, message: "liked"});
+        res.send({ result, message: "liked" });
     } catch (error) {
         console.log(error);
     }
