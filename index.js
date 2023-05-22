@@ -100,7 +100,8 @@ app.get("/categories/list", async (req, res) => {
 app.post("/movies/addmovie", async (req, res) => {
     try {
         const newMovie = req.body;
-        console.log(newMovie);
+        const result = await MoviesCollection.insertOne(newMovie);
+        res.send(result);
     } catch (error) {
         console.log(error);
     }
