@@ -130,6 +130,18 @@ app.get('/movies/all', async (req, res) => {
         console.log(error);
     }
 })
+// top rated movies by sorting with highest stars
+app.get("/movies/toprated", async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit);
+        const filter = {};
+        const allMovies = await MoviesCollection.find(filter).sort({ stars: -1 }).toArray();
+        const topMovies = allMovies.slice(0, limit);
+        res.send(topMovies);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // providing specific id movie
 app.get('/movies/:id', async (req, res) => {
     try {
@@ -171,6 +183,19 @@ app.post("/reviews", async (req, res) => {
     try {
         const review = req.body;
         const result = await ReviewsCollection.insertOne(review);
+        if (result.acknowledged) {
+            const id = review.movieId;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDocument = {
+                $inc: {
+                    stars: parseInt(review.stars),
+                    reviewer: 1
+                }
+            };
+            const options = { upersert: true };
+
+            await MoviesCollection.updateOne(filter, updatedDocument, options);
+        }
         res.send(result);
     } catch (error) {
         console.log(error);
