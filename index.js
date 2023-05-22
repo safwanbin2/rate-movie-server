@@ -86,6 +86,15 @@ app.get("/users/list", async (req, res) => {
         console.log(error);
     }
 })
+// adding new movie
+app.post("/movies/addmovie", async (req, res) => {
+    try {
+        const newMovie = req.body;
+        console.log(newMovie);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // providing all the movies
 app.get('/movies/all', async (req, res) => {
     try {
@@ -173,6 +182,17 @@ app.get("/reviews/:id", async (req, res) => {
         const cursor = ReviewsCollection.find(filter);
         const result = await cursor.toArray();
         res.send(result)
+    } catch (error) {
+        console.log(error);
+    }
+})
+// deleting an specific review qureying by _id authorized by admin
+app.delete("/reviews/delete", async (req, res) => {
+    try {
+        const id = req.query.id;
+        const filter = { _id: new ObjectId(id) };
+        const result = await ReviewsCollection.deleteOne(filter);
+        res.send(result);
     } catch (error) {
         console.log(error);
     }
