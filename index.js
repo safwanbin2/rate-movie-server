@@ -86,6 +86,16 @@ app.get("/users/list", async (req, res) => {
         console.log(error);
     }
 })
+// providing categories list
+app.get("/categories/list", async (req, res) => {
+    try {
+        const filter = {};
+        const result = await CategoriesCollection.find(filter).toArray();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // adding new movie
 app.post("/movies/addmovie", async (req, res) => {
     try {
