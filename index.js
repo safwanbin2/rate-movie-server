@@ -106,6 +106,20 @@ app.post("/movies/addmovie", async (req, res) => {
         console.log(error);
     }
 })
+// deleting a movie 
+app.delete("/movies/deletemovie", async (req, res) => {
+    try {
+        const deleteId = req.query.id;
+        const filter = { _id: new ObjectId(deleteId) };
+        const result = await MoviesCollection.deleteOne(filter);
+        if (result.acknowledged) {
+            await ReviewsCollection.deleteMany({ movieId: deleteId });
+        }
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // providing all the movies
 app.get('/movies/all', async (req, res) => {
     try {
