@@ -130,6 +130,23 @@ app.get('/movies/all', async (req, res) => {
         console.log(error);
     }
 })
+// searching api
+app.get("/movies/find", async (req, res) => {
+    try {
+        const searchText = req.query.q;
+        const filter = {
+            title: {
+                $regex: searchText,
+                $options: "i"
+            }
+        };
+        const cursor = MoviesCollection.find(filter);
+        const result = await cursor.toArray();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
 // top rated movies by sorting with highest stars
 app.get("/movies/toprated", async (req, res) => {
     try {
@@ -241,6 +258,16 @@ app.delete("/reviews/delete", async (req, res) => {
     try {
         const id = req.query.id;
         const filter = { _id: new ObjectId(id) };
+        const review = await ReviewsCollection.findOne(filter);
+        // deleting details at moviescollection
+        const updatedDocument = {
+            $inc: {
+                stars: -parseInt(review.stars),
+                reviewer: -1
+            }
+        }
+        await MoviesCollection.updateOne({ _id: new ObjectId(review.movieId) }, updatedDocument);
+
         const result = await ReviewsCollection.deleteOne(filter);
         res.send(result);
     } catch (error) {
