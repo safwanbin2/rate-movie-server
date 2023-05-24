@@ -230,17 +230,6 @@ app.get("/myreviews", async (req, res) => {
         console.log(error);
     }
 })
-// deleting specific review using it's id
-app.delete("/myreviews/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) };
-        const result = await ReviewsCollection.deleteOne(filter);
-        res.send(result);
-    } catch (error) {
-        console.log(error);
-    }
-})
 // proving reviews of specific movie reviews
 app.get("/reviews/:id", async (req, res) => {
     try {
@@ -253,6 +242,17 @@ app.get("/reviews/:id", async (req, res) => {
         console.log(error);
     }
 })
+// deleting specific review using it's id
+// app.delete("/myreviews/:id", async (req, res) => {
+//     try {
+//         const id = req.params.id;
+//         const filter = { _id: new ObjectId(id) };
+//         const result = await ReviewsCollection.deleteOne(filter);
+//         res.send(result);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 // deleting an specific review qureying by _id authorized by admin
 app.delete("/reviews/delete", async (req, res) => {
     try {
