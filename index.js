@@ -134,12 +134,21 @@ app.get('/movies/all', async (req, res) => {
 app.get("/movies/find", async (req, res) => {
     try {
         const searchText = req.query.q;
+        const categoryText = req.query.category;
         const filter = {
             title: {
                 $regex: searchText,
                 $options: "i"
+            },
+            category: {
+                $regex: categoryText,
+                $options: "i"
             }
         };
+        // if(!searchText && !categoryText){
+        //     const result = await MoviesCollection.find({}).toArray();
+        //     return res.send(result);
+        // }
         const cursor = MoviesCollection.find(filter);
         const result = await cursor.toArray();
         res.send(result);
