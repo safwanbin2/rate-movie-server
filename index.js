@@ -36,6 +36,7 @@ const UsersCollection = client.db('rateMovie').collection('users');
 const MoviesCollection = client.db('rateMovie').collection('movies')
 const CategoriesCollection = client.db('rateMovie').collection('categories');
 const ReviewsCollection = client.db('rateMovie').collection('reviews');
+const MessagesCollection = client.db('rateMovie').collection('messages');
 
 app.get('/', (req, res) => {
     res.send("rateMovie server is running fine");
@@ -313,6 +314,28 @@ app.patch("/reviews/foundHelpful", async (req, res) => {
     }
 })
 
+//posting messages to the collection
+app.post("/messages", async (req, res) => {
+    try {
+        const newMessage = req.body;
+        const result = await MessagesCollection.insertOne(newMessage);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
+
+// getting all the messages
+app.get("/messages", async (req, res) => {
+    try {
+        const filter = {};
+        const cursor = MessagesCollection.find(filter);
+        const result = await cursor.toArray();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 app.listen(port, () => {
     console.log(`server is running on ${port}`)
