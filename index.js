@@ -58,6 +58,18 @@ app.post('/users', async (req, res) => {
     }
 })
 
+// getting an specific user from db with querying email
+app.get("/users/find", async (req, res) => {
+    try {
+        const email = req.query.email;
+        const filter = { email: email };
+        const result = await UsersCollection.findOne(filter);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 // checking if the user is admin or not
 app.get('/users/isAdmin', async (req, res) => {
     try {
@@ -246,7 +258,7 @@ app.get("/reviews/:id", async (req, res) => {
         const id = req.params.id;
         const filter = { movieId: id };
         const cursor = ReviewsCollection.find(filter);
-        const result = await cursor.toArray();
+        const result = (await cursor.toArray()).reverse();
         res.send(result)
     } catch (error) {
         console.log(error);
@@ -330,13 +342,45 @@ app.get("/messages", async (req, res) => {
     try {
         const filter = {};
         const cursor = MessagesCollection.find(filter);
-        const result = await cursor.toArray();
+        const result = (await cursor.toArray()).reverse();
         res.send(result);
     } catch (error) {
         console.log(error);
     }
 })
-
+// updating a message as read 
+app.patch("/messages/updateStatus", async (req, res) => {
+    try {
+        const id = req.query.id;
+        const filter = { _id: new ObjectId(id) };
+        const updateDocument = {
+            $set: {
+                isRead: true
+            }
+        }
+        const options = {
+            upersert: true
+        }
+        const result = await MessagesCollection.updateOne(filter, updateDocument, options);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+    }
+})
+// getting message update isread notification
+app.get("/messages/updateNotification", async (req, res) => {
+    try {
+        const email = req.query.email;
+        const filter = {
+            userEmail: email,
+            isRead: true
+        };
+        const result = await MessagesCollection.find(filter).toArray();
+        res.send(result);
+    } catch (error) {
+        console.log(error)
+    }
+})
 app.listen(port, () => {
     console.log(`server is running on ${port}`)
 })
