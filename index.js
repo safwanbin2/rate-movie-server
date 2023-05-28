@@ -376,9 +376,20 @@ app.get("/messages/updateNotification", async (req, res) => {
             isRead: true
         };
         const result = await MessagesCollection.find(filter).toArray();
-        res.send(result);
+        res.send({ notifications: result.length });
     } catch (error) {
         console.log(error)
+    }
+})
+// getting my messages from email filtering
+app.get("/messages/mymessages", async (req, res) => {
+    try {
+        const email = req.query.email;
+        const filter = { userEmail: email };
+        const result = (await MessagesCollection.find(filter).toArray()).reverse();
+        res.send(result);
+    } catch (error) {
+        console.log(error);
     }
 })
 app.listen(port, () => {
